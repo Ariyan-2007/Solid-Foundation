@@ -1,9 +1,9 @@
 # SOLID-CRUD
-Pretext: I've decided to make a short Web Application API based Backend using the SOLID Principles so that I can better understand the principles myself and hopefully it will help other people who finds this to understand the principles themselves.
+_**Pretext**: I've decided to make a short Web Application API based Backend using the SOLID Principles so that I can better understand the principles myself and hopefully it will help other people who finds this to understand the principles themselves._
 
 What I'll be using to implement:
 
-Frontend: N/A <br> Backend: NodeJS -> Typescript <br> Database: N/A
+Frontend: N/A <br> Backend: **NodeJS -> Typescript** <br> Database: N/A
 
 P.S. N/A field values are subject to change in the future depending on how far I go with this project.
 
