@@ -1,5 +1,5 @@
 # SOLID-CRUD
-_**Pretext**: I've decided to make a short Web Application API based Backend using the SOLID Principles so that I can better understand the principles myself and hopefully it will help other people who finds this to understand the principles themselves. I hope to start the development process by 25.05.24, so if you want to follow you can expect to see updates starting from 25th. Thanks for your patience!_
+_**Pretext**: I've decided to make a short Web API based Backend Application using the SOLID Principles so that I can better understand the principles myself and hopefully it will help other people who finds this to understand the principles themselves. I hope to start the development process by 25.05.24, so if you want to follow you can expect to see updates starting from 25th. Thanks for your patience!_
 
 What I'll be using to implement:
 
