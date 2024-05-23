@@ -3,7 +3,7 @@ _**Pretext**: I've decided to make a short Web API based Backend Application usi
 
 What I'll be using to implement:
 
-Frontend: N/A <br> Backend: **NestJS -> Typescript** <br> Database: N/A
+Frontend: N/A <br> Backend: **NodeJS -> Typescript** <br> Database: N/A
 
 P.S. N/A field values are subject to change in the future depending on how far I go with this project.
 
