@@ -32,7 +32,7 @@ Clients should not be forced to depend on interfaces they do not use.
 
 High-level modules should not depend on low-level modules. Both should depend on abstractions.
 
-<hr>
+## Project Initialization
 
 Make Sure To Have NodeJS Installed Beforehand -> _https://nodejs.org/en/download/package-manager_ <br>
 
@@ -62,3 +62,6 @@ Create a nodemon.json file and open the file and add all these lines: `
   "exec": "ts-node ./src/index.ts"
 }
 ```
+_We use nodemon so that we do not need to close the server everytime there's a change made. it will automatically restart the server whenever you save your progress_
+
+################################################################
