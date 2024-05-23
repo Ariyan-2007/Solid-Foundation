@@ -19,3 +19,13 @@ Objects of a superclass should be replaceable with objects of a subclass without
 Clients should not be forced to depend on interfaces they do not use.
 ### Dependency Inversion Principle:
 High-level modules should not depend on low-level modules. Both should depend on abstractions.
+
+<hr>
+
+Make Sure To Have NodeJS Installed Beforehand -> _https://nodejs.org/en/download/package-manager_ <br>
+
+Initial Package Requirements:
+- ExpressJS -> ` npm install express `
+- TypeScript -> ` npm install typescript ts-node @types/node @types/express --save-dev `
+
+Run This Command To Configure Type Script: `npx tsc --init`
