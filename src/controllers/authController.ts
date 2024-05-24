@@ -37,7 +37,7 @@ export async function userLogin(req: Request, res: Response) {
     if (user) {
       await user.save();
 
-      res.cookie("ARIYAN_DEMO_REST_API", user.authentication.sessionToken, {
+      res.cookie("ARIYAN-AUTH", user.authentication.sessionToken, {
         domain: "localhost",
       });
 
