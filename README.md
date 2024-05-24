@@ -32,7 +32,7 @@ Clients should not be forced to depend on interfaces they do not use.
 
 High-level modules should not depend on low-level modules. Both should depend on abstractions.
 
-<hr>
+## Project Initialization
 
 Make Sure To Have NodeJS Installed Beforehand -> _https://nodejs.org/en/download/package-manager_ <br>
 
@@ -40,7 +40,28 @@ Initial Package Requirements:
 
 - ExpressJS -> `npm install express`
 - TypeScript -> `npm install typescript ts-node @types/node @types/express --save-dev`
+- Nodemon -> `npm install nodemon`
 
 Run This Command To Configure Type Script: `npx tsc --init`
 
-Now Open your package.json file and under the scripts section add the following lines: `"build": "tsc --project ./"`
+Now Open your package.json file and under the scripts section add the following lines:
+
+```
+"build": "tsc --project ./"
+"start": "node dist/index.js",
+"dev": "nodemon --exec ts-node src/index.ts"
+```
+
+Create a nodemon.json file and open the file and add all these lines: `
+
+```
+{
+  "watch": ["src"],
+  "ext": "ts,js,json",
+  "ignore": ["dist"],
+  "exec": "ts-node ./src/index.ts"
+}
+```
+_We use nodemon so that we do not need to close the server everytime there's a change made. it will automatically restart the server whenever you save your progress_
+
+################################################################
