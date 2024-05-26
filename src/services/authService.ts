@@ -9,17 +9,17 @@ export async function registerUser(
   dob: Date
 ) {
   if (!email || !username || !password || !dob) {
-    throw new Error("Missing required fields");
+    return "Missing required fields";
   }
 
   if (!validateEmail(email)) {
-    throw new Error("Invalid email format");
+    return "Invalid email format";
   }
 
   try {
     const existingUser = await getUserByEmail(email);
     if (existingUser) {
-      throw new Error("User with this email already exists");
+      return "User with this email already exists";
     }
 
     const salt = random();
@@ -36,18 +36,18 @@ export async function registerUser(
     });
 
     return user;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.message;
   }
 }
 
 export async function loginUser(email: string, password: string) {
   if (!email || !password) {
-    throw new Error("Missing email or password");
+    return "Missing email or password";
   }
 
   if (!validateEmail(email)) {
-    throw new Error("Invalid email format");
+    return "Invalid email format";
   }
 
   try {
@@ -55,7 +55,7 @@ export async function loginUser(email: string, password: string) {
       "+authentication.salt +authentication.password"
     );
     if (!existingUser) {
-      throw new Error("User with this email does not exist");
+      return "User with this email does not exist";
     }
 
     const expectedHash = authentication(
@@ -64,7 +64,7 @@ export async function loginUser(email: string, password: string) {
     );
 
     if (existingUser.authentication.password !== expectedHash) {
-      throw new Error("Incorrect password");
+      return "Incorrect password";
     }
 
     const salt = random();
@@ -75,7 +75,7 @@ export async function loginUser(email: string, password: string) {
     );
 
     return existingUser;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.message;
   }
 }
