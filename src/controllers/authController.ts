@@ -2,16 +2,17 @@
 import { Request, Response } from "express";
 import { loginUser, registerUser } from "../services/authService";
 import { getUserByEmail } from "../repositories/userRepository";
+import { DOMAIN } from "../config/appConfig";
 
 export async function userRegister(req: Request, res: Response) {
   try {
-    const { email, password, username } = req.body;
+    const { email, password, username, dob } = req.body;
 
     if (!email || !password || !username) {
       return res.sendStatus(400);
     }
 
-    const user = await registerUser(email, username, password);
+    const user = await registerUser(email, username, password, dob);
     if (user) {
       return res.status(200).json(user);
     } else {
@@ -38,7 +39,7 @@ export async function userLogin(req: Request, res: Response) {
       await user.save();
 
       res.cookie("ARIYAN-AUTH", user.authentication.sessionToken, {
-        domain: "localhost",
+        domain: DOMAIN,
       });
 
       return res.status(200).json(user).end();

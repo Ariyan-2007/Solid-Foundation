@@ -1,33 +1,28 @@
-import express from "express";
 import { Request, Response } from "express";
 import {
-  getUserByEmail,
-  getUserById,
-  getUsers,
-} from "../repositories/userRepository";
+  fetchAllUsers,
+  fetchUserByIdOrEmail,
+  removeUserById,
+} from "../services/userService";
 
 export async function getAllUsers(req: Request, res: Response) {
   try {
-    const users = await getUsers();
-
+    const users = await fetchAllUsers();
     return res.status(200).json(users);
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+    if (error instanceof Error) {
+      console.error(error.message);
+      return res.status(400).json({ message: error.message });
+    }
+    console.error("Unknown error occurred");
+    return res.status(400).json({ message: "Unknown error occurred" });
   }
 }
 
 export async function getUser(req: Request, res: Response) {
   try {
-    let user;
-
-    if (req.query.id) {
-      user = await getUserById(req.query.id as string);
-    } else if (req.query.email) {
-      user = await getUserByEmail((req.query.email as string).toLowerCase());
-    } else {
-      return res.status(400).json({ message: "Please provide an id or email" });
-    }
+    const { id, email } = req.query;
+    const user = await fetchUserByIdOrEmail(id as string, email as string);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -35,7 +30,31 @@ export async function getUser(req: Request, res: Response) {
 
     return res.status(200).json(user);
   } catch (error) {
-    console.log(error);
-    return res.sendStatus(400);
+    if (error instanceof Error) {
+      console.error(error.message);
+      return res.status(400).json({ message: error.message });
+    }
+    console.error("Unknown error occurred");
+    return res.status(400).json({ message: "Unknown error occurred" });
+  }
+}
+
+export async function deleteUser(req: Request, res: Response) {
+  try {
+    const { id } = req.query;
+
+    if (!id) {
+      return res.status(400).json({ message: "Please provide an id" });
+    }
+
+    await removeUserById(id as string);
+    return res.sendStatus(204);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+      return res.status(400).json({ message: error.message });
+    }
+    console.error("Unknown error occurred");
+    return res.status(400).json({ message: "Unknown error occurred" });
   }
 }

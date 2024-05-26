@@ -4,7 +4,8 @@ import { authentication, random } from "../helpers/encryption";
 export async function registerUser(
   email: string,
   username: string,
-  password: string
+  password: string,
+  dob: Date
 ) {
   try {
     const existingUser = await getUserByEmail(email);
@@ -18,6 +19,7 @@ export async function registerUser(
     const user = await createUser({
       email,
       username,
+      dob,
       authentication: {
         salt,
         password: hashedPassword,
