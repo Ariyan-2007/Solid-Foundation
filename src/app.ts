@@ -20,6 +20,5 @@ app.use(compression());
 // Routes
 
 app.use("/", routes());
-// app.use("/api/users", userRoutes);
 
 export default app;

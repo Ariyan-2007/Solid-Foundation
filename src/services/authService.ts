@@ -1,5 +1,6 @@
 import { createUser, getUserByEmail } from "../repositories/userRepository";
 import { authentication, random } from "../helpers/encryption";
+import { validateEmail } from "../helpers/validation";
 
 export async function registerUser(
   email: string,
@@ -7,10 +8,18 @@ export async function registerUser(
   password: string,
   dob: Date
 ) {
+  if (!email || !username || !password || !dob) {
+    throw new Error("Missing required fields");
+  }
+
+  if (!validateEmail(email)) {
+    throw new Error("Invalid email format");
+  }
+
   try {
     const existingUser = await getUserByEmail(email);
     if (existingUser) {
-      return null;
+      throw new Error("User with this email already exists");
     }
 
     const salt = random();
@@ -33,12 +42,20 @@ export async function registerUser(
 }
 
 export async function loginUser(email: string, password: string) {
+  if (!email || !password) {
+    throw new Error("Missing email or password");
+  }
+
+  if (!validateEmail(email)) {
+    throw new Error("Invalid email format");
+  }
+
   try {
     const existingUser = await getUserByEmail(email).select(
       "+authentication.salt +authentication.password"
     );
     if (!existingUser) {
-      return null;
+      throw new Error("User with this email does not exist");
     }
 
     const expectedHash = authentication(
@@ -46,8 +63,8 @@ export async function loginUser(email: string, password: string) {
       password
     );
 
-    if (existingUser.authentication.password != expectedHash) {
-      return null;
+    if (existingUser.authentication.password !== expectedHash) {
+      throw new Error("Incorrect password");
     }
 
     const salt = random();
@@ -58,5 +75,7 @@ export async function loginUser(email: string, password: string) {
     );
 
     return existingUser;
-  } catch (error) {}
+  } catch (error) {
+    throw error;
+  }
 }
