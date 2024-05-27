@@ -3,6 +3,7 @@ import {
   fetchAllUsers,
   fetchUserByIdOrEmail,
   removeUserById,
+  updateUserDataById,
 } from "../services/userService";
 
 export async function getAllUsers(req: Request, res: Response) {
@@ -49,6 +50,27 @@ export async function deleteUser(req: Request, res: Response) {
     }
 
     const result = await removeUserById(id as string);
+    if (typeof result === "string") {
+      console.error(result);
+      return res.status(400).json({ message: result });
+    }
+
+    return res.sendStatus(204);
+  } catch (error) {
+    console.error("Unknown error occurred:", error);
+    return res.status(500).json({ message: "Unknown error occurred" });
+  }
+}
+
+export async function updateUser(req: Request, res: Response) {
+  try {
+    const { id } = req.query;
+
+    if (!id) {
+      return res.status(400).json({ message: "Please provide an id" });
+    }
+
+    const result = await updateUserDataById(id as string, req.body);
     if (typeof result === "string") {
       console.error(result);
       return res.status(400).json({ message: result });

@@ -3,6 +3,7 @@ import {
   getUserByEmail,
   getUserById,
   getUsers,
+  updateUserById,
 } from "../repositories/userRepository";
 
 export async function fetchAllUsers() {
@@ -41,5 +42,19 @@ export async function removeUserById(id: string) {
       return `Error deleting user: ${error.message}`;
     }
     return "Unknown error deleting user";
+  }
+}
+
+export async function updateUserDataById(
+  id: string,
+  values: Record<string, any>
+) {
+  try {
+    await updateUserById(id, values);
+  } catch (error) {
+    if (error instanceof Error) {
+      return `Error updating user: ${error.message}`;
+    }
+    return "Unknown error updating user";
   }
 }
