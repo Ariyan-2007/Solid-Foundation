@@ -3,6 +3,7 @@ export interface IUser {
   email: string;
   dob: Date;
   joiningDate: Date;
+  role: string;
   authentication: {
     password: string;
     salt: string;

@@ -16,6 +16,7 @@ export const getUserById = (id: string) => UserModel.findById(id);
 
 export const createUser = async (values: Record<string, any>) => {
   values.joiningDate = new Date();
+  values.role = "User";
   const newUser = new UserModel(values);
   const savedUser = await newUser.save();
   return savedUser.toObject();

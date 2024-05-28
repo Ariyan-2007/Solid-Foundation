@@ -11,3 +11,5 @@ export const MONGO_URL: string =
   "mongodb+srv://ariyanjahangireng:admin@cluster0.lgfe8k2.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 export const DOMAIN: string = process.env.DOMAIN || "localhost";
+
+export const DATABASE_NAME: string = process.env.DATABASE_NAME || "test";

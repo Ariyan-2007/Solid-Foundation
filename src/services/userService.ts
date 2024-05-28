@@ -3,6 +3,7 @@ import {
   getUserByEmail,
   getUserById,
   getUsers,
+  updateUserById,
 } from "../repositories/userRepository";
 
 export async function fetchAllUsers() {
@@ -10,9 +11,9 @@ export async function fetchAllUsers() {
     return await getUsers();
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(`Error fetching users: ${error.message}`);
+      return `Error fetching users: ${error.message}`;
     }
-    throw new Error("Unknown error fetching users");
+    return "Unknown error fetching users";
   }
 }
 
@@ -23,13 +24,13 @@ export async function fetchUserByIdOrEmail(id?: string, email?: string) {
     } else if (email) {
       return await getUserByEmail(email.toLowerCase());
     } else {
-      throw new Error("Please provide an id or email");
+      return "Please provide an id or email";
     }
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(`Error fetching user: ${error.message}`);
+      return `Error fetching user: ${error.message}`;
     }
-    throw new Error("Unknown error fetching user");
+    return "Unknown error fetching user";
   }
 }
 
@@ -38,8 +39,22 @@ export async function removeUserById(id: string) {
     await deleteUserById(id);
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(`Error deleting user: ${error.message}`);
+      return `Error deleting user: ${error.message}`;
     }
-    throw new Error("Unknown error deleting user");
+    return "Unknown error deleting user";
+  }
+}
+
+export async function updateUserDataById(
+  id: string,
+  values: Record<string, any>
+) {
+  try {
+    await updateUserById(id, values);
+  } catch (error) {
+    if (error instanceof Error) {
+      return `Error updating user: ${error.message}`;
+    }
+    return "Unknown error updating user";
   }
 }

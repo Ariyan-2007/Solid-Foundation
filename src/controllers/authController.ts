@@ -1,7 +1,6 @@
 // authController.ts
 import { Request, Response } from "express";
 import { loginUser, registerUser } from "../services/authService";
-import { getUserByEmail } from "../repositories/userRepository";
 import { DOMAIN } from "../config/appConfig";
 
 export async function userRegister(req: Request, res: Response) {
@@ -12,11 +11,11 @@ export async function userRegister(req: Request, res: Response) {
       return res.sendStatus(400);
     }
 
-    const user = await registerUser(email, username, password, dob);
-    if (user) {
-      return res.status(200).json(user);
+    const response = await registerUser(email, username, password, dob);
+    if (typeof response === "string") {
+      return res.status(400).json({ error: response });
     } else {
-      return res.sendStatus(400);
+      return res.status(200).json(response);
     }
   } catch (error) {
     console.error("Error in user registration:", error);
@@ -35,7 +34,9 @@ export async function userLogin(req: Request, res: Response) {
 
     const user = await loginUser(email, password);
 
-    if (user) {
+    if (typeof user === "string") {
+      return res.status(401).json({ error: user });
+    } else {
       await user.save();
 
       res.cookie("ARIYAN-AUTH", user.authentication.sessionToken, {
@@ -43,8 +44,6 @@ export async function userLogin(req: Request, res: Response) {
       });
 
       return res.status(200).json(user).end();
-    } else {
-      return res.status(401).json({ error: "Invalid email or password." });
     }
   } catch (error) {
     console.error("Error in user login:", error);
