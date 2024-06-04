@@ -19,8 +19,8 @@ app.use(json());
 app.use(compression());
 app.use(express.static(__dirname + "/public"));
 app.use("/uploads", express.static("uploads"));
-// Routes
 
+// Routes
 app.use("/", routes());
 
 export default app;
