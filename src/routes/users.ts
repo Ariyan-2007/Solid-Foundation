@@ -6,10 +6,16 @@ import {
   updateUser,
 } from "../controllers/userController";
 import { isAuthenticated } from "../middlewares/authMiddleware";
+import { upload } from "../middlewares/uploadMiddleware";
 
 export default (router: Router) => {
   router.get("/users", isAuthenticated, getAllUsers);
   router.get("/user", isAuthenticated, getUser);
-  router.patch("/user/update", isAuthenticated, updateUser);
+  router.patch(
+    "/user/update",
+    isAuthenticated,
+    upload.single("profilePic"),
+    updateUser
+  );
   router.delete("/user/delete", deleteUser);
 };

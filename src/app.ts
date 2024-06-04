@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { json, urlencoded } from "express";
 import routes from "./routes";
+import multer from "multer";
 
 const app: Express = express();
 
@@ -13,10 +14,11 @@ app.use(
   })
 );
 app.use(cookieParser());
-app.use(urlencoded({ extended: false }));
+app.use(urlencoded({ extended: true }));
 app.use(json());
 app.use(compression());
-
+app.use(express.static(__dirname + "/public"));
+app.use("/uploads", express.static("uploads"));
 // Routes
 
 app.use("/", routes());

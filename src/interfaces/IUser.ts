@@ -9,7 +9,7 @@ export interface IUser {
     salt: string;
     sessionToken: string;
   };
-  profilePic?: Buffer;
+  profilePic?: string;
   name?: {
     firstName: string;
     lastName: string;

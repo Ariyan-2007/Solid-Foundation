@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema({
     salt: { type: String, select: false },
     sessionToken: { type: String, select: false },
   },
-  profilePic: { type: Buffer },
+  profilePic: { type: String },
   name: {
     firstName: { type: String },
     lastName: { type: String },

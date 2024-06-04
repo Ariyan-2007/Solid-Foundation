@@ -65,12 +65,21 @@ export async function deleteUser(req: Request, res: Response) {
 export async function updateUser(req: Request, res: Response) {
   try {
     const { id } = req.query;
+    let values;
+    if (req.file) {
+      values = {
+        ...req.body,
+        profilePic: req.file.path,
+      };
+    } else {
+      values = req.body;
+    }
 
-    if (!id) {
+    if (id === undefined || id === "") {
       return res.status(400).json({ message: "Please provide an id" });
     }
 
-    const result = await updateUserDataById(id as string, req.body);
+    const result = await updateUserDataById(id as string, values);
     if (typeof result === "string") {
       console.error(result);
       return res.status(400).json({ message: result });
