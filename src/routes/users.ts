@@ -7,6 +7,7 @@ import {
 } from "../controllers/userController";
 import { isAuthenticated } from "../middlewares/authMiddleware";
 import { upload } from "../middlewares/uploadMiddleware";
+// import { checkRole } from "../middlewares/roleMiddleware";
 
 export default (router: Router) => {
   router.get("/users", isAuthenticated, getAllUsers);

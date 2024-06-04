@@ -4,8 +4,14 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { json, urlencoded } from "express";
 import routes from "./routes";
+import fs from "fs";
 
 const app: Express = express();
+
+const uploadsDir = "./uploads";
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir);
+}
 
 app.use(
   cors({
