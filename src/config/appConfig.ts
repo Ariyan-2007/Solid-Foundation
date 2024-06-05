@@ -13,3 +13,8 @@ export const MONGO_URL: string =
 export const DOMAIN: string = process.env.DOMAIN || "localhost";
 
 export const DATABASE_NAME: string = process.env.DATABASE_NAME || "test";
+
+export const BASE_FILES_URL =
+  process.env.NODE_ENV === "production"
+    ? "http://" + DOMAIN + "/"
+    : "http://" + DOMAIN + ":" + PORT + "/";

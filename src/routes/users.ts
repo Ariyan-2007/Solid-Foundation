@@ -7,10 +7,10 @@ import {
 } from "../controllers/userController";
 import { isAuthenticated } from "../middlewares/authMiddleware";
 import { upload } from "../middlewares/uploadMiddleware";
-// import { checkRole } from "../middlewares/roleMiddleware";
+import { checkRole } from "../middlewares/roleMiddleware";
 
 export default (router: Router) => {
-  router.get("/users", isAuthenticated, getAllUsers);
+  router.get("/users", isAuthenticated, checkRole(["Admin"]), getAllUsers);
   router.get("/user", isAuthenticated, getUser);
   router.patch(
     "/user/update",
@@ -18,5 +18,10 @@ export default (router: Router) => {
     upload.single("profilePic"),
     updateUser
   );
-  router.delete("/user/delete", deleteUser);
+  router.delete(
+    "/user/delete",
+    isAuthenticated,
+    checkRole(["Admin"]),
+    deleteUser
+  );
 };
