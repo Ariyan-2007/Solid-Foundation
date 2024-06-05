@@ -5,6 +5,7 @@ import {
   removeUserById,
   updateUserDataById,
 } from "../services/userService";
+import { BASE_FILES_URL } from "../config/appConfig";
 
 export async function getAllUsers(req: Request, res: Response) {
   try {
@@ -69,7 +70,7 @@ export async function updateUser(req: Request, res: Response) {
     if (req.file) {
       values = {
         ...req.body,
-        profilePic: req.file.path,
+        profilePic: BASE_FILES_URL + req.file.path,
       };
     } else {
       values = req.body;

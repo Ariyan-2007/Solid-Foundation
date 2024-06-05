@@ -4,9 +4,14 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { json, urlencoded } from "express";
 import routes from "./routes";
-import multer from "multer";
+import fs from "fs";
 
 const app: Express = express();
+
+const uploadsDir = "./uploads";
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir);
+}
 
 app.use(
   cors({
@@ -19,8 +24,8 @@ app.use(json());
 app.use(compression());
 app.use(express.static(__dirname + "/public"));
 app.use("/uploads", express.static("uploads"));
-// Routes
 
+// Routes
 app.use("/", routes());
 
 export default app;

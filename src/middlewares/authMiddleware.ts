@@ -9,7 +9,7 @@ export async function isAuthenticated(
   next: NextFunction
 ) {
   try {
-    const sessionToken = req.cookies["ARIYAN-AUTH"];
+    const sessionToken = req.headers["authorization"];
 
     if (!sessionToken) {
       return res.sendStatus(403);
