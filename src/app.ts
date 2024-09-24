@@ -1,31 +1,52 @@
-import express, { Express } from "express";
+import express from "express";
+import http from "http";
+import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 import compression from "compression";
 import cors from "cors";
-import cookieParser from "cookie-parser";
-import { json, urlencoded } from "express";
+import { connectToDatabase } from "./db";
 import routes from "./routes";
-import fs from "fs";
+import { HOST, MONGO_URI, PORT, swaggerDocs } from "./helpers/globalHelper";
+import swaggerUi from "swagger-ui-express";
+import { dbErrorHandler } from "./middlewares/errorHandler";
 
-const app: Express = express();
-
-const uploadsDir = "./uploads";
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir);
-}
+const app = express();
 
 app.use(
   cors({
     credentials: true,
   })
 );
-app.use(cookieParser());
-app.use(urlencoded({ extended: true }));
-app.use(json());
+
 app.use(compression());
-app.use(express.static(__dirname + "/public"));
-app.use("/uploads", express.static("uploads"));
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-// Routes
+const startServer = () => {
+  const server = http.createServer(app);
+
+  server.listen(PORT, HOST, () => {
+    console.log(`Server running on - http://${HOST}:${PORT}`);
+  });
+};
+
+if (MONGO_URI) {
+  connectToDatabase(MONGO_URI)
+    .then(() => {
+      startServer();
+    })
+    .catch((error) => {
+      console.error(
+        "Failed to start server due to DB connection issue:",
+        error
+      );
+    });
+} else {
+  console.error("Database URI broken or not found. Please fix and re-run.");
+  process.exit(1);
+}
+
 app.use("/", routes());
-
-export default app;
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use(dbErrorHandler);
