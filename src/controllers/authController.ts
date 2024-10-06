@@ -1,89 +1,105 @@
-// authController.ts
-import { Request, Response } from "express";
-import { loginUser, registerUser } from "../services/authService";
-import { DOMAIN } from "../config/appConfig";
-import { IUser } from "../interfaces/IUser";
-import { getUserBySessionToken } from "../repositories/userRepository";
+import express, { Request, Response } from "express";
+import {
+  createUser,
+  getUserByEmail,
+  getUserBySession,
+} from "../repositories/userRepo";
+import { authentication, random } from "../helpers/authHelper";
+import { HOST, expirationTime, accessPath } from "../helpers/globalHelper";
+import { responseFormat } from "../helpers/apiHelper";
 
-export async function userRegister(req: Request, res: Response) {
+export const login = async (req: express.Request, res: express.Response) => {
   try {
-    const { email, password, username, dob } = req.body;
+    const { email } = req.body;
+    const user = await getUserByEmail(email);
+    const salt = random();
 
-    if (!email || !password || !username) {
-      return res.sendStatus(400);
-    }
+    user.authentication.token = authentication(salt, user._id.toString());
 
-    const response = await registerUser(email, username, password, dob);
-    if (typeof response === "string") {
-      return res.status(400).json({ error: response });
-    } else {
-      return res.status(200).json(response);
-    }
-  } catch (error) {
-    console.error("Error in user registration:", error);
-    return res.status(500).json({ error: "Internal server error" });
-  }
-}
-
-export async function userLogin(req: Request, res: Response) {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ error: "Email and password are required." });
-    }
-
-    const user = await loginUser(email, password);
-
-    if (typeof user === "string") {
-      return res.status(401).json({ error: user });
-    } else {
-      await user.save();
-
-      const sessionToken = user.authentication.sessionToken;
-
-      if (!sessionToken) {
-        return res
-          .status(500)
-          .json({ error: "Failed to generate session token." });
-      }
-
-      res.setHeader("Authorization", sessionToken);
-
-      return res
-        .status(200)
-        .json({ message: "Login successful.", token: sessionToken })
-        .end();
-    }
-  } catch (error) {
-    console.error("Error in user login:", error);
-    return res.status(500).json({ error: "Internal server error" });
-  }
-}
-
-export async function userLogout(req: Request, res: Response) {
-  try {
-    const sessionToken = req.headers["authorization"];
-
-    if (!sessionToken) {
-      return res
-        .status(400)
-        .json({ error: "No session token found in authorization header." });
-    }
-
-    const user = await getUserBySessionToken(sessionToken);
-
-    if (!user) {
-      return res.status(401).json({ error: "Invalid session token." });
-    }
-
-    user.authentication.sessionToken = "";
     await user.save();
 
-    return res.status(200).json({ message: "Logout successful." }).end();
+    res.cookie("Token", user.authentication.token, {
+      domain: HOST,
+      path: accessPath,
+      expires: expirationTime,
+      httpOnly: true,
+    });
+    console.log("Logged in Successfully");
+    return res
+      .status(200)
+      .json(responseFormat(true, user, "User Logged in Successfully"))
+      .end();
   } catch (error) {
-    console.error("Error in user logout:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    console.log(error);
+    return res.sendStatus(400);
   }
-}
+};
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    const sessionToken = req.cookies["Token"];
+
+    const user = await getUserBySession(sessionToken);
+
+    if (user) {
+      delete user.authentication.token;
+      await user.save();
+    }
+
+    res.clearCookie("Token");
+
+    return res
+      .status(200)
+      .json(responseFormat(true, user, "User Logged Out Successfully"));
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(400);
+  }
+};
+
+export const register = async (req: express.Request, res: express.Response) => {
+  try {
+    const {
+      username,
+      name,
+      phone,
+      email,
+      password,
+      role,
+      photo,
+      gender,
+      dob,
+      address,
+    } = req.body;
+
+    const photoUrl = req.file ? req.file.path : null;
+
+    const salt = random();
+    const user = await createUser({
+      username,
+      name,
+      phone,
+      email,
+      authentication: {
+        salt,
+        password: authentication(salt, password),
+      },
+      status: "pending",
+      role,
+      photo: photoUrl,
+      gender,
+      dob,
+      address,
+    });
+
+    return res
+      .status(200)
+      .json(
+        responseFormat(true, user, "User Registration Completed Successfully")
+      )
+      .end();
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(400);
+  }
+};

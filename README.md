@@ -1,67 +1,48 @@
-# SOLID-CRUD
+# Pet Profile Management API
 
-_**Pretext**: I've decided to make a short Web API based Backend Application using the SOLID Principles so that I can better understand the principles myself and hopefully it will help other people who finds this to understand the principles themselves. I hope to start the development process by 25.05.24, so if you want to follow you can expect to see updates starting from 25th. Thanks for your patience!_
+## Overview
 
-What I'll be using to implement:
+The Pet Profile Management API is a robust Node.js application built with TypeScript that facilitates the management of pet profiles using QR codes. It is designed to streamline the process of creating, updating, and retrieving information about pets and their owners while ensuring data integrity and security.
 
-Frontend: N/A <br> Backend: **NodeJS -> Typescript** <br> Database: N/A
+## Features
 
-P.S. N/A field values are subject to change in the future depending on how far I go with this project.
+- **Pet Profiles**: Create and manage detailed profiles for pets, including their ID, picture, breed, name, gender, age, and dietary preferences.
+- **Owner Profiles**: Store and manage owner information, including name, contact details, and pets owned.
+- **QR Code Integration**: Generate unique QR codes for each pet that can be scanned to access their profile easily.
+- **Auto-Incrementing Age**: Automatically update the pet's age based on the date of birth.
+- **Allergy Tracking**: Maintain a list of foods that pets are allergic to, ensuring their safety and health.
+- **RESTful API**: Provides a clear and consistent interface for all operations, adhering to REST principles.
+- **SOLID Architecture**: Designed following SOLID principles to ensure scalability, maintainability, and testability.
 
-## SOLID Principle
+## API Endpoints
 
-The SOLID principles are a set of five design principles in object-oriented programming that aim to make software designs more understandable, flexible, maintainable, and extendable.
+### Pet Endpoints
 
-### Single Responsibility Principle:
+- **GET /pets**: Retrieve a list of all pets.
+- **POST /pets**: Create a new pet profile.
+- **GET /pets/:id**: Retrieve a specific pet profile by ID.
+- **PUT /pets/:id**: Update a pet profile.
+- **DELETE /pets/:id**: Delete a pet profile.
 
-A class should have only one reason to change, meaning it should have only one job or responsibility.
+### Owner Endpoints
 
-### Open/Closed Principle:
+- **GET /owners**: Retrieve a list of all owners.
+- **POST /owners**: Create a new owner profile.
+- **GET /owners/:id**: Retrieve a specific owner profile by ID.
+- **PUT /owners/:id**: Update an owner profile.
+- **DELETE /owners/:id**: Delete an owner profile.
 
-Software entities should be open for extension but closed for modification.
+### QR Code Endpoints
 
-### Liskov Substitution Principle:
+- **GET /qrcodes**: Retrieve a list of all QR codes.
+- **POST /qrcodes**: Generate a new QR code for a pet.
+- **GET /qrcodes/:id**: Retrieve a specific QR code by ID.
+- **PUT /qrcodes/:id**: Update QR code details.
+- **DELETE /qrcodes/:id**: Delete a QR code.
 
-Objects of a superclass should be replaceable with objects of a subclass without affecting the correctness of the program.
+## Technologies Used
 
-### Interface Segregation Principle:
-
-Clients should not be forced to depend on interfaces they do not use.
-
-### Dependency Inversion Principle:
-
-High-level modules should not depend on low-level modules. Both should depend on abstractions.
-
-## Project Initialization
-
-Make Sure To Have NodeJS Installed Beforehand -> _https://nodejs.org/en/download/package-manager_ <br>
-
-Initial Package Requirements:
-
-- ExpressJS -> `npm install express`
-- TypeScript -> `npm install typescript ts-node @types/node @types/express --save-dev`
-- Nodemon -> `npm install nodemon`
-
-Run This Command To Configure Type Script: `npx tsc --init`
-
-Now Open your package.json file and under the scripts section add the following lines:
-
-```
-"build": "tsc --project ./"
-"start": "node dist/index.js",
-"dev": "nodemon --exec ts-node src/index.ts"
-```
-
-Create a nodemon.json file and open the file and add all these lines: `
-
-```
-{
-  "watch": ["src"],
-  "ext": "ts,js,json",
-  "ignore": ["dist"],
-  "exec": "ts-node ./src/index.ts"
-}
-```
-_We use nodemon so that we do not need to close the server everytime there's a change made. it will automatically restart the server whenever you save your progress_
-
-################################################################
+- **Node.js**: JavaScript runtime for server-side development.
+- **TypeScript**: Superset of JavaScript for type safety.
+- **Express**: Web framework for building RESTful APIs.
+- **MongoDB**: NoSQL database for storing pet and owner profiles.

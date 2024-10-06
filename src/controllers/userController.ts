@@ -1,94 +1,142 @@
-import { Request, Response } from "express";
+import express from "express";
+import { get } from "lodash";
 import {
-  fetchAllUsers,
-  fetchUserByIdOrEmail,
-  removeUserById,
-  updateUserDataById,
-} from "../services/userService";
-import { BASE_FILES_URL } from "../config/appConfig";
+  deleteUserById,
+  getUserById,
+  getUserByUserName,
+  getUsers,
+} from "../repositories/userRepo";
+import { calculateAge } from "../helpers/calcHelper";
+import { responseFormat, responseFormatPaginated } from "../helpers/apiHelper";
+import { upload_directory } from "../helpers/globalHelper";
+import fs from "fs";
+import path from "path";
 
-export async function getAllUsers(req: Request, res: Response) {
+export const getAllUsers = async (
+  req: express.Request,
+  res: express.Response
+) => {
   try {
-    const users = await fetchAllUsers();
-    if (typeof users === "string") {
-      console.error(users);
-      return res.status(400).json({ message: users });
-    }
-    return res.status(200).json(users);
-  } catch (error) {
-    console.error("Unknown error occurred:", error);
-    return res.status(500).json({ message: "Unknown error occurred" });
-  }
-}
+    const page = parseInt(req.query.page as string) || 1;
+    const perPage = parseInt(req.query.perPage as string) || 10;
 
-export async function getUser(req: Request, res: Response) {
+    if (isNaN(page) || page < 1 || perPage < 1 || isNaN(perPage)) {
+      return res
+        .status(400)
+        .json(
+          responseFormat(
+            false,
+            null,
+            "Invalid Request. Please provide Numbers greater than 0"
+          )
+        );
+    }
+
+    const users = await getUsers(page, perPage);
+
+    return res
+      .status(200)
+      .json(responseFormatPaginated(true, users, "Users Fetched Succesfully"));
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(400);
+  }
+};
+
+export const deleteUser = async (
+  req: express.Request,
+  res: express.Response
+) => {
   try {
-    const { id, email } = req.query;
-    const user = await fetchUserByIdOrEmail(id as string, email as string);
+    const { id } = req.params;
 
-    if (typeof user === "string") {
-      console.error(user);
-      return res.status(400).json({ message: user });
+    const deletedUser = await deleteUserById(id);
+
+    if (deletedUser.photo) {
+      const photoPath = path.join(
+        __dirname,
+        upload_directory,
+        path.basename(deletedUser.photo)
+      );
+
+      fs.unlink(photoPath, (err) => {
+        if (err) {
+          console.error("Error deleting photo:", err);
+        }
+      });
     }
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    return res.status(200).json(user);
+    return res
+      .status(200)
+      .json(responseFormat(true, deletedUser, "Successfully Deleted User"));
   } catch (error) {
-    console.error("Unknown error occurred:", error);
-    return res.status(500).json({ message: "Unknown error occurred" });
+    console.log(error);
+    return res.sendStatus(400);
   }
-}
+};
 
-export async function deleteUser(req: Request, res: Response) {
+export const updateUserName = async (
+  req: express.Request,
+  res: express.Response
+) => {
   try {
-    const { id } = req.query;
-
-    if (!id) {
-      return res.status(400).json({ message: "Please provide an id" });
+    const { id } = req.params;
+    const { username } = req.body;
+    if (!username) {
+      return res.sendStatus(400);
     }
 
-    const result = await removeUserById(id as string);
-    if (typeof result === "string") {
-      console.error(result);
-      return res.status(400).json({ message: result });
+    const user = await getUserById(id);
+    const checkUser = await getUserByUserName(username);
+
+    if (checkUser) {
+      return res
+        .status(400)
+        .json(
+          responseFormat(
+            false,
+            null,
+            "Username already exists! Try another one"
+          )
+        );
     }
 
-    return res.sendStatus(204);
+    user.username = username;
+
+    await user.save();
+
+    return res
+      .status(200)
+      .json(responseFormat(true, user, "Username Updated Successfully!"))
+      .end();
   } catch (error) {
-    console.error("Unknown error occurred:", error);
-    return res.status(500).json({ message: "Unknown error occurred" });
+    console.log(error);
+    return res.status(400);
   }
-}
+};
 
-export async function updateUser(req: Request, res: Response) {
+export const getProfile = async (
+  req: express.Request,
+  res: express.Response
+) => {
   try {
-    const { id } = req.query;
-    let values;
-    if (req.file) {
-      values = {
-        ...req.body,
-        profilePic: BASE_FILES_URL + req.file.path,
-      };
-    } else {
-      values = req.body;
-    }
+    const id = get(req, "identity._id") as string;
+    const profile = await getUserById(id);
 
-    if (id === undefined || id === "") {
-      return res.status(400).json({ message: "Please provide an id" });
-    }
+    const profileObject = profile.toObject();
 
-    const result = await updateUserDataById(id as string, values);
-    if (typeof result === "string") {
-      console.error(result);
-      return res.status(400).json({ message: result });
-    }
+    const response = {
+      ...profileObject,
+      age: calculateAge(profileObject.dob),
+    };
 
-    return res.sendStatus(204);
+    delete response.dob;
+
+    return res
+      .status(200)
+      .json(responseFormat(true, response, "Profile retrieved successfully"));
   } catch (error) {
-    console.error("Unknown error occurred:", error);
-    return res.status(500).json({ message: "Unknown error occurred" });
+    console.log(error);
+    return res.sendStatus(400);
   }
-}
+};
